@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GeoJSON Task - agusmakmun</title>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAtS_6mlBUfmxGrmePDkeg3iRS0cgVHUXk"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <style type="text/css">#mapDiv { width: 800px; height: 500px; }.zoom__in, .zoom__out {padding: 10px 27px;}</style>
+</head>
+<body>
+  <div class="container">
+    <h2>GeoJSON <span class="label label-warning">Task</span></h2>
+    <hr />
+    <div class="row">
+      <div class="col-md-9">
+        <div id="mapDiv"></div>
+      </div>
+      <div class="col-md-3">
+        <p class="alert alert-info">
+          <span class="glyphicon glyphicon-info-sign"></span> Click some locations inside map and then Click <b>Render Line</b>.
+        </p>
+        <input id='lat' type="text" class="form-control" placeholder="Latitude.." readonly><br />
+        <input id='lon' type="text" class="form-control" placeholder="Longitude.." readonly>
+        <hr />
+        <button class="btn btn-primary form-control render__data" type="button">
+          <span class="glyphicon glyphicon-resize-horizontal"></span> Render Line
+        </button>
+        <hr />
+        <button class="btn btn-warning form-control render__json__data" type="button">
+          <span class="glyphicon glyphicon-transfer"></span> Render data from JSON
+        </button>
+        <hr />
+        <button class="btn btn-success form-control reload" type="button">
+          <span class="glyphicon glyphicon-refresh"></span> Reload
+        </button>
+        <hr />
+        <div class="btn-group">
+        <button class="btn btn-default zoom__in" type="button">
+          <span class="glyphicon glyphicon-zoom-in"></span> Zoom In
+        </button>
+        <button class="btn btn-default zoom__out" type="button">
+          <span class="glyphicon glyphicon-zoom-out"></span> Zoom Out
+        </button>
+        </div><!-- btn-group -->
+      </div>
+    </div><!-- end row -->
+    <hr />
+    <div>Copyright &copy; 2016 - agus makmun <i>(agus@python.web.id)</i></div>
+  </div><!-- end container -->
+
+  <script>
+    var marker, flightPath;
+    var flightPlanCoordinates = [];
+    var LongLat = new google.maps.LatLng(-7.5562555, 110.7669439);
+
+    // Function fo setup the map to Zoom in or Zoom out.
+    function zoomIn(map) {
+      map.setZoom(20);
+    }
+    function zoomOut(map) {
+      map.setZoom(10);
+    }
+
+    // First inital map.
+    function initMap() {
+          google.maps.visualRefresh = true;
+          var mapOptions = {
+              center: LongLat,
+              zoom: 12,
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+          };
+
+          var mapElement = document.getElementById('mapDiv');
+          map = new google.maps.Map(mapElement, mapOptions);
+
+          var marker = new google.maps.Marker({
+              position: LongLat,
+              animation:google.maps.Animation.BOUNCE
+          });
+          marker.setMap(map);
+
+          // Adding event click listener
+          google.maps.event.addListener(map, "click", function(event) {
+              // get lat/lon of click
+              var clickLat = event.latLng.lat();
+              var clickLon = event.latLng.lng();
+
+              // show in input box
+              document.getElementById("lat").value = clickLat.toFixed(5);
+              document.getElementById("lon").value = clickLon.toFixed(5);
+
+              var marker_loop = new google.maps.Marker({
+                  position: new google.maps.LatLng(clickLat, clickLon),
+                  //animation:google.maps.Animation.BOUNCE
+              });
+              marker_loop.setMap(map);
+
+              // Recording to the JSON data.
+              flightPlanCoordinates.push({
+                  lat   : clickLat,
+                  lng   : clickLon
+              });
+              // You can also try what happend when map is clicked.
+              //console.log(JSON.stringify(flightPlanCoordinates));            
+          }); //end addListener 
+
+
+          // Handle it with some click buttons.
+          $(document).ready(function(){
+              $('.zoom__in').click(function(){
+                  zoomIn(map);
+              });
+              $('.zoom__out').click(function(){
+                  zoomOut(map);
+              });
+              $('.reload').click(function(){
+                location.reload();
+              });
+
+              $('.render__data').click(function(){
+                  // Try to console log what recorded from `flightPlanCoordinates` we have.
+                  //console.log(JSON.stringify(flightPlanCoordinates));
+
+                  // Setup marker to hidden.
+                  //marker.setMap(null);
+
+                  // Setup map to new theme.
+                  map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
+
+                  var flightPath = new google.maps.Polyline({
+                      position      : LongLat,
+                      path          : flightPlanCoordinates,
+                      geodesic      : true,
+                      strokeColor   : '#FF0000',
+                      strokeOpacity : 1.0,
+                      strokeWeight  : 2
+                  });
+                  flightPath.setMap(map);
+              }); // end .render__data click
+
+              $('.render__json__data').click(function(){
+                  function drawGeometry(geom) {
+                    if (geom.type == 'LineString') {
+                        var pointCount = geom.coordinates.length;
+                        var linePath = [];
+                        for (var i=0; i < pointCount; i++) {
+                            var Lat = geom.coordinates[i][0];
+                            var Lon = geom.coordinates[i][1]
+                            linePath.push({
+                                lat   : Lat,
+                                lng   : Lon
+                            });
+                            var marker_loop = new google.maps.Marker({
+                                position: new google.maps.LatLng(Lat, Lon),
+                                animation:google.maps.Animation.BOUNCE
+                            });
+                            marker.setMap(null); //disable first maker
+                            marker_loop.setMap(map);
+                        }
+                        // console.log(linePath);
+                        var lineJsonData = new google.maps.Polyline({
+                            position      : LongLat,
+                            path          : linePath,
+                            geodesic      : true,
+                            strokeColor   : '#2e6da4',
+                            strokeOpacity : 1.0,
+                            strokeWeight  : 2
+                        });
+                        lineJsonData.setMap(map);
+                    }
+                  }
+
+                  $.getJSON('geojson.js', function (data) {
+                      $.each(data.features, function(key, val) {
+                        drawGeometry(val.geometry);
+                      });
+                  });
+
+              }); // end .render__json__data click
+          }); //end document ready
+    }
+    google.maps.event.addDomListener(window, 'load', initMap);
+  </script>
+</body>
+</html>
