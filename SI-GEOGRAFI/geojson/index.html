@@ -62,7 +62,7 @@
   <script>
     var marker, flightPath;
     var flightPlanCoordinates = [];
-    var LongLat = new google.maps.LatLng(-7.5562555, 110.7669439);
+    var LatLong = new google.maps.LatLng(-7.5562555, 110.7669439);
 
     // Function fo setup the map to Zoom in or Zoom out.
     function zoomIn(map) {
@@ -76,7 +76,7 @@
     function initMap() {
           google.maps.visualRefresh = true;
           var mapOptions = {
-              center: LongLat,
+              center: LatLong,
               zoom: 12,
               mapTypeId: google.maps.MapTypeId.ROADMAP
           };
@@ -85,7 +85,7 @@
           map = new google.maps.Map(mapElement, mapOptions);
 
           var marker = new google.maps.Marker({
-              position : LongLat,
+              position : LatLong,
               animation:google.maps.Animation.BOUNCE
           });
           marker.setMap(map);
@@ -142,7 +142,7 @@
                   map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
 
                   var flightPath = new google.maps.Polyline({
-                      position      : LongLat,
+                      position      : LatLong,
                       path          : flightPlanCoordinates,
                       geodesic      : true,
                       strokeColor   : '#FF0000',
@@ -173,7 +173,7 @@
                         }
                         // console.log(linePath);
                         var lineJsonData = new google.maps.Polyline({
-                            position      : LongLat,
+                            position      : LatLong,
                             path          : linePath,
                             geodesic      : true,
                             strokeColor   : '#2e6da4',
