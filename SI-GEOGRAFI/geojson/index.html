@@ -1,7 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>GeoJSON Task - agusmakmun</title>
+
+  <!--
+    Please test this inside path of /var/www/ or what webserver inside your machine has been setup.
+    Makesure the webserver has been started. For example such as apache/nginx.
+
+    Creator       : agus makmun (agus@python.web.id) - L200130113
+    License       : MIT
+    Release Date  : 12-May-2016
+  -->
+
+  <title>GeoJSON Task - agusmakmun (L200130113)</title>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAtS_6mlBUfmxGrmePDkeg3iRS0cgVHUXk"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
@@ -45,7 +55,7 @@
       </div>
     </div><!-- end row -->
     <hr />
-    <div>Copyright &copy; 2016 - agus makmun <i>(agus@python.web.id)</i></div>
+    <div>Copyright &copy; 2016 - agus makmun <i>(agus@python.web.id)</i> - L200130113</div>
   </div><!-- end container -->
 
   <script>
@@ -69,12 +79,12 @@
               zoom: 12,
               mapTypeId: google.maps.MapTypeId.ROADMAP
           };
-
+          // Select the div id to view the map.
           var mapElement = document.getElementById('mapDiv');
           map = new google.maps.Map(mapElement, mapOptions);
 
           var marker = new google.maps.Marker({
-              position: LongLat,
+              position : LongLat,
               animation:google.maps.Animation.BOUNCE
           });
           marker.setMap(map);
@@ -101,9 +111,12 @@
                   lng   : clickLon
               });
               // You can also try what happend when map is clicked.
-              //console.log(JSON.stringify(flightPlanCoordinates));            
-          }); //end addListener 
+              //console.log(JSON.stringify(flightPlanCoordinates));
+          }); //end addListener
 
+          // For test what we have after doing some clicks
+          // This variable from `flightPlanCoordinates` have been appended some Latitude & Longitude. 
+          //console.log(JSON.stringify(flightPlanCoordinates));
 
           // Handle it with some click buttons.
           $(document).ready(function(){
@@ -121,8 +134,8 @@
                   // Try to console log what recorded from `flightPlanCoordinates` we have.
                   //console.log(JSON.stringify(flightPlanCoordinates));
 
-                  // Setup marker to hidden.
-                  //marker.setMap(null);
+                  // disable first marker if button of `.render__data` is clicked.
+                  marker.setMap(null);
 
                   // Setup map to new theme.
                   map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
@@ -151,10 +164,10 @@
                                 lng   : Lon
                             });
                             var marker_loop = new google.maps.Marker({
-                                position: new google.maps.LatLng(Lat, Lon),
-                                animation:google.maps.Animation.BOUNCE
+                                position  : new google.maps.LatLng(Lat, Lon),
+                                animation : google.maps.Animation.BOUNCE
                             });
-                            marker.setMap(null); //disable first maker
+                            marker.setMap(null); //disable first marker
                             marker_loop.setMap(map);
                         }
                         // console.log(linePath);
