@@ -1,3 +1,9 @@
+##Web Service
+
+1. SOAP
+2. XML-RPC
+3. Restfull
+
 ###Server XMLRPC
 
 **1. Panggil library**
